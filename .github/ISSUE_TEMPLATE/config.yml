@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Email support
+    url: mailto:sdt.ddt.tools@gmail.com
+    about: For private reports, data-deletion / GDPR requests, or anything that doesn't fit a public issue.
+  - name: Privacy policy
+    url: https://github.com/GVOrganization/ddt-tools/blob/main/PRIVACY.md
+    about: What DDT collects (opt-in, sanitized), how to opt out, and how to request deletion.
+  - name: Support guide
+    url: https://github.com/GVOrganization/ddt-tools/blob/main/SUPPORT.md
+    about: All the ways to get help during the beta and what to include in a report.
