@@ -1,5 +1,11 @@
 # DDT — Databricks Data Tools
 
+![Databricks Data Tools](./assets/hero.png)
+
+[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/sdt-ddt-tools.ddt-vscode?label=VS%20Code%20Marketplace&color=D2522E)](https://marketplace.visualstudio.com/items?itemName=sdt-ddt-tools.ddt-vscode)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/sdt-ddt-tools.ddt-vscode?color=D2522E)](https://marketplace.visualstudio.com/items?itemName=sdt-ddt-tools.ddt-vscode)
+[![CLI on npm](https://img.shields.io/npm/v/@ddt-tools%2Fcli?label=%40ddt-tools%2Fcli&logo=npm&color=CB3837)](https://www.npmjs.com/package/@ddt-tools/cli)
+
 **Declarative schema management for Databricks Unity Catalog, from VS Code and the CLI.** Author your schema as `.sql` files, compare them against a live workspace, and deploy with a safety classifier that refuses to do dangerous things silently.
 
 > **Public Beta** — all features are free during the 30-day beta. AI features are bring-your-own-API-key. See [Beta program](#beta-program) below.
@@ -24,9 +30,23 @@ It is the Databricks counterpart to [SDT (Snowflake Data Tools)](https://github.
 
 > Databricks users predominantly drive DDT from the CLI and CI; the project lifecycle (init / build / publish / extract) lives in the `@ddt-tools/cli`, while the VS Code surface focuses on browsing, comparing, diagramming, and reviewing.
 
+## See it in action
+
+**Schema compare with a safety verdict on every change** — `SAFE` / `DESTRUCTIVE` / `EXPENSIVE` / `UNRECOVERABLE`, before anything touches your live workspace:
+
+![Schema Compare demo](./assets/demo-compare.gif)
+
+**Deploys that refuse to destroy data silently** — destructive changes come out blocked as comments until you opt in, and a DEEP CLONE makes every deploy one command away from rollback:
+
+![Safe deploy demo](./assets/demo-deploy.gif)
+
+**Reverse-engineer an entire workspace in seconds** — one command, one `.sql` file per object, ready for git:
+
+![Extract demo](./assets/demo-extract.gif)
+
 ## Install
 
-- **VS Code extension:** install **DDT — Databricks Data Tools** from the VS Code Marketplace — _(marketplace link: coming with the beta listing)_.
+- **VS Code extension:** install [**DDT — Databricks Data Tools**](https://marketplace.visualstudio.com/items?itemName=sdt-ddt-tools.ddt-vscode) from the VS Code Marketplace.
 - **CLI:**
 
   ```sh
