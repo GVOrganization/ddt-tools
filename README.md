@@ -44,7 +44,19 @@ It is the Databricks counterpart to [SDT (Snowflake Data Tools)](https://github.
 
 ![Extract demo](./assets/demo-extract.gif)
 
+## Documentation
+
+**[📚 Full documentation →](./docs/README.md)**
+
+| Start | Core workflow | Reference | Help |
+|---|---|---|---|
+| [🚀 Getting started](./docs/getting-started.md) | [📥 Extract](./docs/extract.md) | [⌨️ CLI reference](./docs/cli-reference.md) | [❓ FAQ](./docs/faq.md) |
+| [🔌 Connections](./docs/connections.md) | [🔍 Schema compare](./docs/schema-compare.md) | [🧩 VS Code reference](./docs/vscode-extension.md) | [🩹 Troubleshooting](./docs/troubleshooting.md) |
+| [📁 Projects](./docs/projects.md) | [🛡️ Safe deploy](./docs/safe-deploy.md) | [⚙️ Configuration](./docs/configuration.md) | [💬 Support](./SUPPORT.md) |
+| | [🚦 Safety classifier](./docs/safety-classifier.md) | [✨ AI features](./docs/ai-features.md) · [🔁 CI/CD](./docs/ci-cd.md) | |
+
 ## Install
+
 
 - **VS Code extension:** install [**DDT — Databricks Data Tools**](https://marketplace.visualstudio.com/items?itemName=sdt-ddt-tools.ddt-vscode) from the VS Code Marketplace.
 - **CLI:**
