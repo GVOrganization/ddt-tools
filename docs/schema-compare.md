@@ -1,6 +1,6 @@
 # 🔍 Schema compare
 
-> Diff any two of your project, a built artifact, or a live Databricks workspace — and see exactly what a deploy would change before it runs.
+> Diff two `.ddtpac` build artifacts — and see exactly what a deploy would change before it runs.
 
 **On this page:** [The compare model](#the-compare-model) · [Reading results](#reading-results) · [VS Code flow](#vs-code-flow) · [CLI flow](#cli-flow) · [Compare audit trail](#compare-audit-trail) · [Drift check](#drift-check)
 
@@ -10,19 +10,20 @@
 
 ![Schema compare demo](../assets/demo-compare.gif)
 
-DDT's compare engine diffs two **sources** in any direction. A source is one of:
+DDT's compare engine diffs two **`.ddtpac` build artifacts** — `pac ↔ pac`. A pac is a compiled, frozen snapshot produced by `ddt build` (from a project) or by `ddt extract --out-pac` (from a live workspace).
 
-| Source | What it is |
+| Source | How you get it |
 |---|---|
-| Project (`.ddtproj`) | Your working tree of `.sql` files — the desired state. |
-| Build artifact (`.ddtpac`) | A compiled, frozen snapshot from `ddt build`. |
-| Live workspace (`databricks://<profile>[/<catalog>[/<schema>]]`) | A connected Databricks workspace, read live. |
+| Desired state | `ddt build -p <project>.ddtproj` → a `.ddtpac` of what you authored. |
+| Current state | `ddt extract --connection <name> --out-pac <file>.ddtpac` → a `.ddtpac` snapshot of the live workspace. |
 
-Any combination works. The everyday ones:
+So the everyday comparisons are all pac ↔ pac:
 
-- **Project ↔ live** — does the workspace match what I authored?
-- **Project ↔ pac** — what changed since the last build?
-- **Pac ↔ pac** — audit two tagged releases against each other.
+- **Desired ↔ live snapshot** — does the workspace match what I authored? (build your project, extract the workspace, compare the two pacs)
+- **Build ↔ build** — audit two tagged releases against each other.
+
+> [!NOTE]
+> Comparing a `.ddtproj` project or a live workspace **directly** (without building a pac first) is pending v0.3. Today, `ddt compare` reads `.ddtpac` files on both sides. There is no `databricks://` URL form — snapshot the workspace into a pac with `ddt extract --out-pac` instead.
 
 The same engine powers `ddt publish` and `ddt drift`, so the diff you review in compare is the diff a deploy acts on.
 
@@ -76,23 +77,25 @@ The view shows:
 `ddt compare` diffs two sources, passed explicitly as `--source` and `--target`.
 
 ```sh
-# Project vs live workspace
-ddt compare --source ./MyProject.ddtproj \
-            --target 'databricks://prod/MY_CATALOG'
+# Desired state (project pac) vs a live snapshot (extracted pac)
+ddt build -p ./MyProject.ddtproj                                  # → ./bin/MyProject.ddtpac
+ddt extract --connection prod --out-pac ./bin/prod-live.ddtpac
+ddt compare --source ./bin/MyProject.ddtpac \
+            --target ./bin/prod-live.ddtpac
 
 # Pac vs pac — audit two builds, as Markdown
 ddt compare --source ./bin/v1.ddtpac --target ./bin/v2.ddtpac --format markdown
 
-# Project vs live with AI narration (Pro)
-ddt compare --source ./MyProject.ddtproj \
-            --target 'databricks://prod' --explain
+# Pac vs pac with AI narration (Pro)
+ddt compare --source ./bin/MyProject.ddtpac \
+            --target ./bin/prod-live.ddtpac --explain
 ```
 
 | Flag | What it does | Notes |
 |---|---|---|
-| `--source <spec>` | The desired-state side. | A `.ddtproj`, `.ddtpac`, or `databricks://` URL. |
-| `--target <spec>` | The side being compared against. | Same accepted forms as `--source`. |
-| `--format <fmt>` | Output format: `table`, `json`, `yaml`, `sql`, `markdown`. | Defaults to `table`. `--json` is an alias for `--format json`. |
+| `--source <spec>` | The desired-state side. | A `.ddtpac` build artifact. |
+| `--target <spec>` | The side being compared against. | A `.ddtpac` build artifact. |
+| `--format <fmt>` | Output format: `summary`, `json`, `markdown`. | Defaults to `summary`. `--json` is an alias for `--format json`. |
 | `--ignore-case` | Compare object names case-insensitively. | — |
 | `--explain` | Add AI narration of the diff. | Pro tier; requires a configured AI provider. |
 | `--color <when>` | `always` / `never` / `auto`. | `auto` honors the TTY and `NO_COLOR`. |
@@ -118,11 +121,11 @@ Severity colors: UNRECOVERABLE renders bold red, DESTRUCTIVE red, EXPENSIVE yell
 
 ```sh
 # CI gate: fail the build when a change ripples a type error
-ddt compare --source ./MyProject.ddtproj --target ./bin/last.ddtpac \
+ddt compare --source ./bin/MyProject.ddtpac --target ./bin/last.ddtpac \
             --type-safe --format json
 
 # Strict mode + impact file the editor reads back as squiggles
-ddt compare --source ./MyProject.ddtproj --target ./bin/last.ddtpac \
+ddt compare --source ./bin/MyProject.ddtpac --target ./bin/last.ddtpac \
             --type-safe --break-on warning --write-impact
 ```
 
@@ -153,7 +156,7 @@ Compare answers "how do these two sources differ?" **Drift** answers a narrower,
 
 ```sh
 # Report drift between the project and the live workspace
-ddt drift --project ./MyProject.ddtproj --connection prod
+ddt drift --source ./MyProject.ddtproj --connection prod
 ```
 
 For multi-region or replica fleets, `ddt drift-gate` compares each replica against a primary and **fails** the gate when any replica drifts beyond a threshold — drop it into CI:

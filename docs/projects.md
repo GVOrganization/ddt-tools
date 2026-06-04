@@ -47,13 +47,15 @@ That's enough for `ddt validate` to accept. A fuller project with per-environmen
 ```
 
 > [!TIP]
-> The `$schema` field gives your editor hover-help and JSON validation as you type.
+> The `$schema` field is a forward-looking hint for editors. Once the schema is
+> hosted at that URL, your editor will offer hover-help and JSON validation as
+> you type; the field is otherwise inert and safe to keep.
 
 ### Fields
 
 | Field | What it does | Notes / default |
 |---|---|---|
-| `$schema` | URL of the JSON schema | Recommended. `https://ddt.dev/schemas/ddtproj/v1.json` |
+| `$schema` | URL of the JSON schema | Advisory; enables IDE autocomplete once the schema is hosted. `https://ddt.dev/schemas/ddtproj/v1.json` |
 | `name` | Project name | Required. Stamped into `.ddtpac` manifests and error messages |
 | `version` | SemVer string | Required. Bumped per release |
 | `targetPlatform` | `{ platform: 'Databricks', edition?, minRuntime? }` | Required. `edition` is `Standard` / `Premium` / `Enterprise` |
@@ -223,7 +225,7 @@ A `.ddtpac` holds four sections:
 | `source/` | Verbatim copies of every authored `.sql` / `.json`, preserving the folder layout |
 | `checksums.json` | A SHA-256 per source file and per model object |
 
-Why it exists: the pac is the unit of deployment in CI/CD. `ddt publish --pac <file>` deploys it and `ddt verify --pac <file>` audits it — re-hashing every source and model entry against `checksums.json` to confirm the pac wasn't tampered with after build.
+Why it exists: the pac is the unit of deployment in CI/CD. `ddt publish --source <file>.ddtpac --target <current>.ddtpac` deploys the diff and `ddt verify --pac <file>` audits it — re-hashing every source and model entry against `checksums.json` to confirm the pac wasn't tampered with after build.
 
 The build is **deterministic**: file entries are sorted by path, the model array is sorted by `(objectType, fqn)`, and ZIP timestamps are pinned. Two builds of the same project produce byte-identical pacs apart from the `builtAt` timestamp — which is what makes signed-pac distribution feasible.
 
@@ -267,7 +269,7 @@ With a Slice in place:
 | `ddt publish` | Honors `slice` by default. `--no-slice` works the same way |
 | `ddt validate` | Compiles the slice and flags any overlap between `owns` and `reads` patterns |
 
-When a `.ddtpac` is built from a sliced project, the slice is captured in its `manifest.json`, so `publish --pac` honors the same boundary.
+When a `.ddtpac` is built from a sliced project, the slice is captured in its `manifest.json`, so `ddt publish` honors the same boundary.
 
 ---
 

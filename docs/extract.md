@@ -99,9 +99,12 @@ Re-run `ddt extract` against an existing project to refresh it from the live wor
 The safer refresh path once a project is under source control: **compare first** to see exactly what changed, then decide what to pull.
 
 ```sh
-# See what the workspace has that your project doesn't (and vice versa)
-ddt compare --source ./MyProject.ddtproj \
-            --target 'databricks://prod/main'
+# Snapshot the live workspace into a pac, build your project into a pac,
+# then compare the two (compare is pac ↔ pac).
+ddt build -p ./MyProject.ddtproj                                  # → ./bin/MyProject.ddtpac
+ddt extract --connection prod --out-pac ./bin/prod-live.ddtpac
+ddt compare --source ./bin/MyProject.ddtpac \
+            --target ./bin/prod-live.ddtpac
 ```
 
 > [!IMPORTANT]

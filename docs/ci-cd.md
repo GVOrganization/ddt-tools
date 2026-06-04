@@ -72,7 +72,7 @@ jobs:
       - run: ddt build --project ./catalogs/MyProject.ddtproj --out ./bin/MyProject.ddtpac
 
       # Register the workspace connection from env-var secrets (see "Secrets in CI").
-      - run: ddt connection add staging
+      - run: ddt connection add --name staging
                --host "$DATABRICKS_HOST"
                --token env:DATABRICKS_TOKEN
                --warehouse-id "$DATABRICKS_WAREHOUSE_ID"
@@ -81,8 +81,11 @@ jobs:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
           DATABRICKS_WAREHOUSE_ID: ${{ vars.DATABRICKS_WAREHOUSE_ID }}
 
+      # Snapshot the live workspace into a pac to diff against (compare/publish are pac ↔ pac).
+      - run: ddt extract --connection staging --out-pac ./bin/live.ddtpac
+
       # Dry-run the deploy; exit code 4 fails the build on unapproved destructive change.
-      - run: ddt publish --source ./bin/MyProject.ddtpac --target ./bin/MyProject.ddtpac
+      - run: ddt publish --source ./bin/MyProject.ddtpac --target ./bin/live.ddtpac
                --connection staging --dry-run
 ```
 
@@ -102,15 +105,17 @@ jobs:
         with: { node-version: '20' }
       - run: npm install -g @ddt-tools/cli
       - run: ddt build --project ./catalogs/MyProject.ddtproj --out ./bin/MyProject.ddtpac
-      - run: ddt connection add prod
+      - run: ddt connection add --name prod
                --host "$DATABRICKS_HOST" --token env:DATABRICKS_TOKEN
                --warehouse-id "$DATABRICKS_WAREHOUSE_ID"
         env:
           DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
           DATABRICKS_WAREHOUSE_ID: ${{ vars.DATABRICKS_WAREHOUSE_ID }}
+      # Snapshot the live workspace into a pac to diff against (publish is pac ↔ pac).
+      - run: ddt extract --connection prod --out-pac ./bin/live.ddtpac
       # Real deploy. The safety classifier runs first and blocks unapproved destructive change.
-      - run: ddt publish --source ./bin/MyProject.ddtpac --target ./bin/MyProject.ddtpac
+      - run: ddt publish --source ./bin/MyProject.ddtpac --target ./bin/live.ddtpac
                --connection prod --apply --yes
 ```
 
@@ -140,8 +145,9 @@ deploy_dev:
   stage: deploy-dev
   script:
     - npm install -g @ddt-tools/cli
-    - ddt connection add dev --host "$DATABRICKS_HOST" --token env:DATABRICKS_TOKEN --warehouse-id "$DATABRICKS_WAREHOUSE_ID"
-    - ddt publish --source ./bin/MyProject.ddtpac --target ./bin/MyProject.ddtpac --connection dev --apply --yes
+    - ddt connection add --name dev --host "$DATABRICKS_HOST" --token env:DATABRICKS_TOKEN --warehouse-id "$DATABRICKS_WAREHOUSE_ID"
+    - ddt extract --connection dev --out-pac ./bin/live.ddtpac
+    - ddt publish --source ./bin/MyProject.ddtpac --target ./bin/live.ddtpac --connection dev --apply --yes
   environment: dev
 
 deploy_prod:
@@ -149,8 +155,9 @@ deploy_prod:
   when: manual           # manual approval gate before production
   script:
     - npm install -g @ddt-tools/cli
-    - ddt connection add prod --host "$DATABRICKS_HOST" --token env:DATABRICKS_TOKEN --warehouse-id "$DATABRICKS_WAREHOUSE_ID"
-    - ddt publish --source ./bin/MyProject.ddtpac --target ./bin/MyProject.ddtpac --connection prod --apply --yes
+    - ddt connection add --name prod --host "$DATABRICKS_HOST" --token env:DATABRICKS_TOKEN --warehouse-id "$DATABRICKS_WAREHOUSE_ID"
+    - ddt extract --connection prod --out-pac ./bin/live.ddtpac
+    - ddt publish --source ./bin/MyProject.ddtpac --target ./bin/live.ddtpac --connection prod --apply --yes
   environment: prod
 ```
 
@@ -191,13 +198,16 @@ stages:
                   artifact: pac
                 - script: npm install -g @ddt-tools/cli
                 - script: >
-                    ddt connection add prod --host "$(DATABRICKS_HOST)"
+                    ddt connection add --name prod --host "$(DATABRICKS_HOST)"
                     --token env:DATABRICKS_TOKEN --warehouse-id "$(DATABRICKS_WAREHOUSE_ID)"
                   env:
                     DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
                 - script: >
+                    ddt extract --connection prod
+                    --out-pac $(Pipeline.Workspace)/pac/live.ddtpac
+                - script: >
                     ddt publish --source $(Pipeline.Workspace)/pac/MyProject.ddtpac
-                    --target $(Pipeline.Workspace)/pac/MyProject.ddtpac
+                    --target $(Pipeline.Workspace)/pac/live.ddtpac
                     --connection prod --apply --yes
 ```
 
@@ -214,7 +224,7 @@ Never inline credentials. Connection profiles resolve `env:<VAR_NAME>` placehold
 
 ```bash
 # Personal access token (or M2M token) referenced via env var — never written to the profile file.
-ddt connection add prod --host "$DATABRICKS_HOST" \
+ddt connection add --name prod --host "$DATABRICKS_HOST" \
   --token env:DATABRICKS_TOKEN --warehouse-id "$DATABRICKS_WAREHOUSE_ID"
 ```
 

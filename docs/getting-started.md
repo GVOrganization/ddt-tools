@@ -44,7 +44,7 @@ A connection profile carries your workspace host, auth credentials, SQL warehous
 The fastest start is a Personal Access Token (PAT) to validate end-to-end:
 
 ```sh
-ddt connection add prod \
+ddt connection add --name prod \
   --host adb-1234567890123456.7.azuredatabricks.net \
   --auth pat \
   --token env:DATABRICKS_TOKEN \
@@ -117,17 +117,20 @@ This reports the schema check and file-discovery count. If validation fails, the
 
 ## First compare
 
-Compare diffs two sources — a project, a built `.ddtpac` artifact, or a live workspace — in any direction and reports exactly what changed.
+`ddt compare` diffs two **`.ddtpac` build artifacts** (pac ↔ pac) and reports exactly what changed. Comparing a project or a live workspace directly is pending v0.3 — for now, `ddt build` each side into a pac first (extract the live side into a pac with `ddt extract --out-pac`).
 
-Make a change first. Edit a table file — say, add a column to `catalogs/main/schemas/gold/tables/fact_sales.sql`. Then build a pac and compare:
+Make a change first. Edit a table file — say, add a column to `catalogs/main/schemas/gold/tables/fact_sales.sql`. Then build a pac of your project, snapshot the live workspace into another pac, and compare the two:
 
 ```sh
 ddt build -p ./SampleAnalytics.ddtproj
-# Built ./bin/SampleAnalytics.ddtpac
+# Built ./bin/SampleAnalytics.ddtpac        (your desired state)
+
+ddt extract --connection prod --out-pac ./bin/SampleAnalytics-live.ddtpac
+# Snapshot of the live workspace             (the current state)
 
 ddt compare \
   --source ./bin/SampleAnalytics.ddtpac \
-  --target ./bin/SampleAnalytics-live.ddtpac   # or compare via a connection
+  --target ./bin/SampleAnalytics-live.ddtpac
 ```
 
 The compare shows every object grouped by type, badged added / removed / modified / unchanged, with field-level drill-down and safety findings classified UNRECOVERABLE / DESTRUCTIVE / EXPENSIVE / WARNING. In VS Code, the schema compare panel renders the same result.

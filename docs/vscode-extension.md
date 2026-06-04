@@ -138,7 +138,7 @@ Configure DDT under **Settings → Extensions → DDT — Databricks Data Tools*
 The first time you open VS Code with DDT installed, **Get started with DDT** appears on the Welcome page (also reachable via **Help → Welcome**). It walks you through:
 
 1. **Configure a Databricks workspace connection** — add a PAT or OAuth-M2M profile to `~/.ddt/profiles.json`.
-2. **Validate the workspace** — run `ddt validate` in a terminal to confirm Unity Catalog is reachable and your profile resolves.
+2. **Verify the workspace** — run `ddt connection test <name>` in a terminal to confirm Unity Catalog is reachable and your profile resolves.
 3. **Author a Suite** — if you manage several `.ddtproj` projects, wrap them in a `.ddtsuite` for cross-project validation.
 
 > [!NOTE]

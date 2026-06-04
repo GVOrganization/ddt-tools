@@ -88,7 +88,7 @@ export DATABRICKS_WAREHOUSE_ID="1234abc5d678e9f0"
 ### 3. Add the profile
 
 ```sh
-ddt connection add prod-workspace \
+ddt connection add --name prod-workspace \
   --host $DATABRICKS_HOST \
   --auth pat \
   --token env:DATABRICKS_TOKEN \
@@ -129,7 +129,7 @@ workspace version, current user, and the warehouse name
 ### 3. Add the profile
 
 ```sh
-ddt connection add ci-workspace \
+ddt connection add --name ci-workspace \
   --host $DATABRICKS_HOST \
   --auth oauth-m2m \
   --client-id env:DATABRICKS_CLIENT_ID \
@@ -146,7 +146,7 @@ ddt connection add ci-workspace \
 Best for interactive development without long-lived secrets. DDT opens a browser, you sign in, and DDT receives a refresh-token grant on the loopback callback. The refresh token is stored OS-keychain-encrypted — never written plaintext.
 
 ```sh
-ddt connection add dev-workspace \
+ddt connection add --name dev-workspace \
   --host $DATABRICKS_HOST \
   --auth oauth-u2m \
   --warehouse-id $DATABRICKS_WAREHOUSE_ID
@@ -169,7 +169,7 @@ For Azure Databricks running under an Entra ID tenant.
 4. Grant the SP access to the workspace and warehouse (same as the M2M flow).
 
 ```sh
-ddt connection add azure-prod \
+ddt connection add --name azure-prod \
   --host $DATABRICKS_HOST \
   --auth azure-ad \
   --tenant-id env:DATABRICKS_AZURE_TENANT_ID \
@@ -218,7 +218,7 @@ ddt connection test prod-workspace   # auth + warehouse probe
 ddt connection list                  # list profiles (secrets redacted)
 ```
 
-`ddt validate --profile <name>` runs a fuller check: it resolves the profile (env vars expanded), authenticates, lists visible catalogs with `SHOW CATALOGS` to confirm Unity Catalog is reachable, and probes the SQL warehouse the profile references.
+`ddt connection test <name>` resolves the profile (env vars expanded), authenticates, and probes the SQL warehouse the profile references — a quick way to confirm the workspace is reachable before you run anything heavier. (`ddt validate` is a project-side schema/reference check and takes `-p <project>`, not a connection.)
 
 ---
 

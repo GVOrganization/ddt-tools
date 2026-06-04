@@ -6,7 +6,7 @@
 
 ---
 
-The `ddt` command surface mirrors `sdt` by design — same lifecycle phases, same flags, same exit codes. The deltas are the URL scheme (`databricks://`), the project extension (`.ddtproj`), and the build artifact (`.ddtpac`).
+The `ddt` command surface mirrors `sdt` by design — same lifecycle phases, same flags, same exit codes. The deltas are the project extension (`.ddtproj`) and the build artifact (`.ddtpac`). (A couple of commands differ in shape today — `ddt compare` is `.ddtpac ↔ .ddtpac` only, and `ddt publish` takes `--source`/`--target` rather than `--pac`; both are called out below.)
 
 ## Discovery
 
@@ -72,10 +72,10 @@ The everyday loop: author a `.ddtproj`, build it to a `.ddtpac`, deploy it, obse
 | `ddt init` | Scaffold a new project (`<name>.ddtproj` + folder layout). | `--name`, `--scope metastore\|catalog\|schema`, `--catalog`, `--schema`, `--dir` |
 | `ddt validate` | Schema-shape check; with `--references` runs the build-time semantic resolver. | `--project`, `--references`, `--columns`, `--check-variables`, `--min-severity`, `--format`, `--out` |
 | `ddt extract` | Reverse-engineer a live Unity Catalog workspace into per-object `.sql` files. | `--connection`, `--catalog`, `--output`, `--out-pac`, `--project-name` |
-| `ddt build` | Compile a `.ddtproj` to a `.ddtpac` build artifact. | `-o, --out` |
+| `ddt build` | Compile a `.ddtproj` to a `.ddtpac` build artifact. | `-p, --project` (required), `-o, --out` |
 | `ddt publish` | Deploy a `.ddtpac` to a connection; honors every safety gate. | `--source`, `--target`, `--connection`, `--dry-run`, `--apply`, `--yes`, `--manifest`, `--profile`, `--variables`, `--restore-from-snapshot`, `--report-html`, `--webhook`, `--changelog`, `--no-lint`, `--require-reversible`, `--no-rollback`, `--map`, `--map-file` |
-| `ddt compare` | Diff any two of project / pac / live workspace. | `--source`, `--target`, `--format`, `--json`, `--explain`, `--color`, `--ignore-case`, `--no-slice`, `--type-safe`, `--break-on`, `--write-impact`, `--report-html`, `--map`, `--map-file`, `--no-history` |
-| `ddt drift` | Compare the live workspace to what the project expects; report only. | `--project`, `--connection` |
+| `ddt compare` | Diff two `.ddtpac` build artifacts (`pac ↔ pac`; project/live compare pending v0.3 — `ddt build` / `ddt extract --out-pac` each side first). | `--source`, `--target`, `--format`, `--json`, `--explain`, `--color`, `--ignore-case`, `--no-slice`, `--type-safe`, `--break-on`, `--write-impact`, `--report-html`, `--map`, `--map-file`, `--no-history` |
+| `ddt drift` | Compare the live workspace to what the project expects; report only. | `--source`, `--connection`, `--catalog`, `--schema` |
 | `ddt script` | Generate the migration SQL without executing it (always offline). | `--source`, `--target`, `-o, --out`, `--profile`, `--variables`, `--format`, `--banner`, `--color`, `--ignore-case`, `--report-html`, `--map`, `--map-file` |
 | `ddt promote` | Branch-per-env deploy automation; diff two live envs, emit a bundle, optionally open a PR. | `--from`, `--to`, `--open-pr`, `--repo`, `--base` |
 | `ddt refresh` | Generate a post-deploy REFRESH script (streaming tables + MVs + pipelines). | `--source`, `-o`, `--no-streaming-tables`, `--no-materialized-views`, `--no-pipelines` |
@@ -89,7 +89,7 @@ Manage Databricks workspace connection profiles in `~/.ddt/profiles.json`. See [
 
 | Command | What it does | Key flags |
 |---|---|---|
-| `ddt connection add <name>` | Register a profile. | `--host`, `--warehouse-id`, `--auth pat\|oauth-m2m\|oauth-u2m\|azure-ad\|google-idc`, `--token`, `--client-id`, `--client-secret`, `--tenant-id`, `--service-account-key-path`, `--catalog`, `--schema` |
+| `ddt connection add --name <name>` | Register a profile (a positional `<name>` is also accepted). | `--name`, `--host`, `--warehouse-id`, `--auth pat\|oauth-m2m\|oauth-u2m\|azure-ad\|google-idc`, `--token`, `--client-id`, `--client-secret`, `--tenant-id`, `--service-account-key-path`, `--catalog`, `--schema` |
 | `ddt connection list` | List configured profiles. | — |
 | `ddt connection get <name>` | Print a profile as JSON with secrets redacted. | — |
 | `ddt connection test <name>` | Verify a profile connects. | — |

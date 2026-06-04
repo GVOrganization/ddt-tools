@@ -17,7 +17,7 @@
 | | Page | What you'll learn |
 |---|---|---|
 | 📥 | **[Extract a live workspace](extract.md)** | Reverse-engineer Unity Catalog into git-ready `.sql` files |
-| 🔍 | **[Schema compare](schema-compare.md)** | Diff project ↔ pac ↔ live workspace in any direction, read the results |
+| 🔍 | **[Schema compare](schema-compare.md)** | Diff `.ddtpac` ↔ `.ddtpac` (build each side first), read the results |
 | 🛡️ | **[Safe deploy](safe-deploy.md)** | Generate migration scripts, opt-in gates, DEEP CLONE rollback, deploy manifests |
 | 🚦 | **[The safety classifier](safety-classifier.md)** | What DESTRUCTIVE / UNRECOVERABLE / EXPENSIVE / WARNING mean — including UC-specific risks like managed-table file deletion |
 

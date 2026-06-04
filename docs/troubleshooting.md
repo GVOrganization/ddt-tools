@@ -8,7 +8,7 @@
 
 ## Connection failures
 
-Run `ddt connection test <profile>` (or `ddt validate --profile <profile>`) first — it authenticates, lists visible catalogs, and probes the SQL warehouse, so it tells you exactly which step failed.
+Run `ddt connection test <profile>` first — it authenticates and probes the SQL warehouse the profile references, so it tells you exactly which step failed. (`ddt validate` is a project-side check and takes `-p <project>`, not a connection.)
 
 | Symptom | Cause | Fix |
 |---|---|---|

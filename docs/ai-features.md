@@ -81,7 +81,7 @@ Augment-a-command features. The AI annotates, scaffolds, or narrates; you decide
 The `--explain` output drops in right after the structured result:
 
 ```sh
-ddt compare --source my-project.ddtproj --target prod.ddtpac --explain
+ddt compare --source my-project.ddtpac --target prod.ddtpac --explain
 ```
 
 You'll see:
