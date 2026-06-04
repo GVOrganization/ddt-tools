@@ -36,13 +36,19 @@ It is the Databricks counterpart to [SDT (Snowflake Data Tools)](https://github.
 
 ![Schema Compare demo](./assets/demo-compare.gif)
 
+▶ [Watch the 60-second demo on YouTube](https://youtu.be/_p5Z45T2kVM)
+
 **Deploys that refuse to destroy data silently** — destructive changes come out blocked as comments until you opt in, and a DEEP CLONE makes every deploy one command away from rollback:
 
 ![Safe deploy demo](./assets/demo-deploy.gif)
 
+▶ [Watch the 60-second demo on YouTube](https://youtu.be/L7wbQI3OzEQ)
+
 **Reverse-engineer an entire workspace in seconds** — one command, one `.sql` file per object, ready for git:
 
 ![Extract demo](./assets/demo-extract.gif)
+
+▶ [Watch the 60-second demo on YouTube](https://youtu.be/lVclo6wnWfw)
 
 ## Documentation
 
