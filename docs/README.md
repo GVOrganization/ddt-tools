@@ -36,6 +36,7 @@
 | ✨ | **[AI features](ai-features.md)** | Bring-your-own-key setup, sketch from prose, safer alternatives, Ask DDT |
 | 🔁 | **[CI/CD integration](ci-cd.md)** | GitHub Actions, GitLab CI, Azure DevOps patterns; drift gates; PR comments |
 | 🚚 | **[Migrating from other tools](migrating.md)** | Coming from dbt or raw SQL scripts |
+| ⚖️ | **[How DDT compares](comparisons/README.md)** | Honest side-by-sides: Declarative Automation Bundles, Liquibase/Flyway, dbt |
 
 ## When something goes wrong
 
@@ -62,6 +63,7 @@
 | Set up AI features with my own API key | [AI features](ai-features.md) |
 | Find a command I can't remember | [CLI reference](cli-reference.md) — or run `ddt find <keyword>` / press <kbd>Ctrl</kbd>+<kbd>K</kbd> <kbd>F</kbd> in VS Code |
 | Switch from dbt | [Migrating from other tools](migrating.md) |
+| Compare DDT against the tool I use today | [Comparisons](comparisons/README.md) |
 | Report a bug | [Troubleshooting → Still stuck?](troubleshooting.md) or [SUPPORT](../SUPPORT.md) |
 
 ---
